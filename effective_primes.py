@@ -1,21 +1,24 @@
-"""Exact characterization of effective denominator primes.
+"""Exact effective denominator primes for any positive rational pair.
 
-For 0<q<1<r and prime p, put A=v_p(q), C=v_p(r).
-Then p is effective iff A<0 or (A>=0, C<0, q**(-C)*r**A<1).
-No floating point and no exponent cutoff.
+For x < 1 < y, put A=v_p(x), C=v_p(y). Then p is effective iff
+A<0 or (A>=0, C<0, x**(-C)*y**A<1). The other regimes are elementary.
+See PROOF.md and the paper for scope, proof, and lack of a novelty claim.
 """
 from fractions import Fraction
-from sumrings import valuation, prime_factors
+from sumrings import positive_pair, valuation, prime_factors
 
-def effective_primes_exact(q: Fraction, r: Fraction):
-    if not (0 < q < 1 < r):
-        raise ValueError("require 0 < q < 1 < r")
-    primes = set()
-    for n in (q.numerator, q.denominator, r.numerator, r.denominator):
-        primes.update(prime_factors(n))
+
+def effective_primes_exact(q: Fraction, r: Fraction) -> set[int]:
+    q, r = positive_pair(q, r)
+    if q >= 1 and r >= 1:
+        return set()
+    primes = set(prime_factors(q.denominator) + prime_factors(r.denominator))
+    if q <= 1 and r <= 1:
+        return primes
+    x, y = (q, r) if q < 1 else (r, q)
     effective = set()
     for p in primes:
-        a, c = valuation(q, p), valuation(r, p)
-        if a < 0 or (a >= 0 and c < 0 and q**(-c) * r**a < 1):
+        a, c = valuation(x, p), valuation(y, p)
+        if a < 0 or (a >= 0 and c < 0 and x**(-c) * y**a < 1):
             effective.add(p)
     return effective

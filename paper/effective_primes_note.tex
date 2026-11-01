@@ -1,0 +1,382 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs}
+\usepackage[hidelinks]{hyperref}
+\clubpenalty=10000
+\widowpenalty=10000
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\NN}{\mathbb N}
+\newcommand{\QQ}{\mathbb Q}
+\newcommand{\vp}{v_p}
+\title{Effective Denominator Primes in Rational Semirings:\\
+Exact Criteria, Constructive Certificates, and a Unit Obstruction}
+\author{Rational Sumring Lab\\\small Working research note; author attribution to be reviewed}
+\date{November 1, 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+For positive rational numbers $q,r$, we study the primes that occur in the
+reduced denominator of a monomial $q^ir^j<1$. We give an elementary exact
+criterion valid for every positive rational pair, including pairs with both
+generators below one. In the mixed case, we prove the criterion without
+logarithmic approximation and give an explicit rational bound for constructing
+a witness. We show that the same prime set is detected by all semiring elements
+below one. A separate valuation obstruction proves that the three examples
+highlighted in CrowdMath 2026 Open Problem 2 have trivial multiplicative unit
+groups, and we identify a multiplicative atom in each of those examples.
+These results support exact software certificates. They do not decide
+the atomicity or irreducible-divisor-finiteness questions in that problem.
+No priority or novelty claim is made for the elementary results proved here.
+\end{abstract}
+
+\section{Scope, definitions, and provenance}
+For $q,r\in\QQ_{>0}$, put
+\[
+ S(q,r)=\NN_0[q,r]
+ =\left\{\sum_{i,j\ge0}c_{ij}q^ir^j:
+       c_{ij}\in\NN_0,\ \text{finitely many }c_{ij}\ne0\right\},
+ \qquad M(q,r)=S(q,r)\setminus\{0\}.
+\]
+Here $M(q,r)$ is a commutative cancellative monoid under multiplication.
+Its units are the elements $u$ such that $u^{-1}\in M(q,r)$. Elements are
+associates if they differ by a unit. An atom is a nonunit $a$ for which
+$a=bc$ in $M(q,r)$ implies that $b$ or $c$ is a unit. A monoid is atomic if
+each nonunit is a finite product of atoms; it is irreducible-divisor finite
+(IDF) if each element has only finitely many nonassociate atom divisors.
+All statements about atoms and IDF in this note concern multiplication,
+not addition.
+
+The motivation is the official \emph{Arithmetic Conjectures on Rational
+Semirings} project, especially Open Problem 2~\cite{cm2}.
+Its effective-prime definition is stated for $0<q<1<r$; we explicitly extend
+that definition to all positive pairs. The repository retains its historical
+name ``Rational Sumring Lab.''
+
+\begin{definition}
+For a prime $p$, let $v_p$ be the integer-valued valuation on $\QQ_{>0}$,
+normalized by $v_p(p)=1$. Define
+\[
+ E(q,r)=\{p\text{ prime}:\text{ some }i,j\in\NN_0
+       \text{ satisfy }q^ir^j<1\text{ and }v_p(q^ir^j)<0\}.
+\]
+For a positive rational $x$, write $D(x)$ for the prime divisors of its
+denominator in lowest terms.
+\end{definition}
+
+The proofs below are self-contained elementary derivations. The mixed-case
+criterion already appeared in this repository's earlier proof note; it is
+not presented here as a newly discovered theorem. The additional proofs,
+constructive bound, and implementation repair have not been shown to be new
+relative to the literature or the CrowdMath discussion. This is a
+verification-oriented working note, not a claim to have solved an open problem.
+The draft and accompanying software were prepared with AI assistance and
+require the named authors' mathematical and attribution review before any
+submission. No affiliation with, or endorsement by, MIT or CrowdMath is claimed.
+
+\section{An exact criterion and explicit witnesses}
+The elementary identities used throughout are
+\[
+ v_p(xy)=v_p(x)+v_p(y),\qquad
+ v_p(x_1+\cdots+x_n)\ge\min_k v_p(x_k).
+\]
+The second follows by factoring out the smallest common power of $p$ and
+putting the remaining summands over denominators prime to $p$.
+
+\begin{theorem}[Mixed-case criterion]\label{thm:mixed}
+Suppose $0<q<1<r$, and fix a prime $p$. Set $A=v_p(q)$ and $C=v_p(r)$.
+Then
+\[
+ p\in E(q,r)\quad\Longleftrightarrow\quad
+ A<0\quad\text{or}\quad
+ \bigl(A\ge0,\ C<0,\ q^{-C}r^A<1\bigr).
+\]
+\end{theorem}
+\begin{proof}
+If $A<0$, the monomial $q$ is a witness. If $A,C\ge0$, every monomial has
+nonnegative valuation, so there is no witness.
+
+It remains to treat $A\ge0$ and $C=-B<0$, where $B$ is a positive integer.
+Put $t=q^Br^A$. For any witness $m=q^ir^j$, we have $i>0$ and $Bj-Ai>0$.
+If $t\ge1$, then
+\[
+ m^B=q^{Bi}r^{Bj}=t^i r^{Bj-Ai}>1,
+\]
+contrary to $m<1$. Thus $t<1$ is necessary. If $t<1$, choose a positive
+integer $k$ with $rt^k<1$. Such a $k$ exists since $t^k\to0$.
+Taking $i=Bk$ and $j=Ak+1$ gives
+\[
+ q^ir^j=rt^k<1,\qquad Ai-Bj=-B<0.
+\]
+The next proposition gives an explicit choice of $k$ using rational
+arithmetic alone.
+\end{proof}
+
+\begin{proposition}[A rational witness bound]\label{prop:bound}
+In the final case of Theorem~\ref{thm:mixed}, suppose $t=q^Br^A<1$. Set
+\[
+ K=\left\lfloor\frac{(r-1)t}{1-t}\right\rfloor+1.
+\]
+Then $K\ge1$, and $(i,j)=(BK,AK+1)$ is a witness. In particular, the least
+positive integer $k$ with $rt^k<1$ satisfies $k\le K$.
+\end{proposition}
+\begin{proof}
+Let $\delta=t^{-1}-1=(1-t)/t>0$. The definition of $K$ gives
+$K\delta>r-1$. The binomial theorem implies
+\[
+ t^{-K}=(1+\delta)^K\ge1+K\delta>r,
+\]
+so $rt^K<1$. Its valuation at the displayed exponent pair is $-B$, as in
+the preceding proof. The strict inequality in the definition of $K$ is
+essential; replacing it by a potentially equal endpoint is not justified.
+\end{proof}
+
+\begin{corollary}[All positive rational pairs]\label{cor:all}
+The set $E(q,r)$ is determined as follows.
+\begin{enumerate}
+\item If $q,r\ge1$, then $E(q,r)=\varnothing$.
+\item If $q,r\le1$, then $E(q,r)=D(q)\cup D(r)$.
+\item If one generator is below one and the other is above one, reorder
+them as $u<1<v$ and apply Theorem~\ref{thm:mixed} to $(u,v)$.
+\end{enumerate}
+The first two cases agree at $(q,r)=(1,1)$. Cases with one generator equal
+to one are included. Only primes in $D(q)\cup D(r)$ need to be tested.
+\end{corollary}
+\begin{proof}
+In the first case no monomial is below one. In the second case any
+denominator prime of either generator is witnessed by that generator:
+a generator with a nontrivial denominator is strictly below one in this
+case. Conversely, outside $D(q)\cup D(r)$ both generator valuations are
+nonnegative. This also proves the final assertion. Swapping generators
+swaps the witness exponents and changes neither the semiring nor $E$.
+\end{proof}
+
+\begin{remark}[What the bound does and does not provide]
+Proposition~\ref{prop:bound} proves termination, not a polynomial bit-complexity
+bound. The integer $K$ can be large when $t$ is close to one, and the
+numerator and denominator of a certificate can be large. One may find the
+least $k$ in the special family $(Bk,Ak+1)$ by doubling an upper bound and
+then binary search on the monotone predicate $rt^k<1$. This does not find
+a globally smallest exponent pair. All comparisons remain exact.
+\end{remark}
+
+\section{Denominators of sums and an obstruction to units}
+\begin{proposition}\label{prop:sums}
+A prime $p$ lies in $E(q,r)$ if and only if some $x\in S(q,r)$ satisfies
+$0<x<1$ and $v_p(x)<0$. If $p\in E(q,r)$, then for every $\varepsilon>0$
+and positive integer $L$, some $x\in S(q,r)$ satisfies
+$0<x<\varepsilon$ and $v_p(x)\le-L$.
+\end{proposition}
+\begin{proof}
+A monomial witness is itself such an element. Conversely, write $x$ as a
+finite sum of nonzero terms $c_{ij}q^ir^j$, with $c_{ij}\in\NN$.
+The valuation inequality forces at least one term to have negative
+valuation. Since $v_p(c_{ij})\ge0$, its monomial has negative valuation.
+Positivity and $c_{ij}\ge1$ give $q^ir^j\le c_{ij}q^ir^j\le x<1$.
+This monomial witnesses effectiveness. Finally, powers $m^n$ of any
+monomial witness tend to zero, and $v_p(m^n)=nv_p(m)\to-\infty$.
+\end{proof}
+
+\begin{proposition}[Sufficient condition for trivial units]\label{prop:units}
+Suppose a prime $\ell$ satisfies
+\[
+ v_\ell(q)\ge0,\quad v_\ell(r)\ge0,\qquad
+ v_\ell(g)>0\text{ for every }g\in\{q,r\}\text{ with }g<1.
+\]
+Then $M(q,r)^\times=\{1\}$.
+\end{proposition}
+\begin{proof}
+Every nonzero element of $S(q,r)$ has nonnegative $\ell$-valuation.
+A monomial below one must involve a generator below one with positive
+exponent. The hypotheses therefore give valuation at least one for
+each such monomial. If $0<x<1$ belongs to $S(q,r)$, every nonzero term
+in a polynomial representation is below one. As in
+Proposition~\ref{prop:sums}, its underlying monomial is below one.
+Every term has valuation at least one, so $v_\ell(x)\ge1$.
+If a unit $u\ne1$ existed, either $u$ or $u^{-1}$ would be below one.
+Its inverse would have negative $\ell$-valuation, contradicting membership
+in $S(q,r)$. Thus the only unit is $1$.
+\end{proof}
+
+We use this as a sufficient criterion and make no classification of unit
+groups for arbitrary pairs.
+
+\section{The three specified examples}
+The following table records results proved here. The auxiliary prime
+$\ell$ certifies the unit group by Proposition~\ref{prop:units}; it is
+not required to be a denominator prime.
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+$(q,r)$ & $E(q,r)$ & $\ell$ & $M(q,r)^\times$\\
+\midrule
+$(6/35,19/3)$ & $\{5,7\}$ & $2$ & $\{1\}$\\
+$(3/10,7/5)$ & $\{2,5\}$ & $3$ & $\{1\}$\\
+$(2/5,2/3)$ & $\{3,5\}$ & $2$ & $\{1\}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For the first pair, $q$ witnesses $5$ and $7$. The only remaining
+denominator prime is $3$, with $A=1$, $B=1$, and
+$t=qr=114/105=38/35>1$, so it is ineffective. Also
+$v_2(q)=1$ and $v_2(r)=0$, which verifies the unit obstruction.
+For the second pair, $q$ witnesses both denominator primes $2,5$;
+$v_3(q)=1$ and $v_3(r)=0$ verify the unit obstruction.
+For the third pair, both generators are below one: $r$ witnesses $3$
+and $q$ witnesses $5$, while both have $2$-valuation one.
+Thus associates are equal in all three monoids. Nothing in these arguments
+establishes that their nonunits factor into atoms.
+
+\begin{proposition}[A specified atom in each example]\label{prop:atom}
+In each row of the table, the generator $q$ is a multiplicative atom.
+In $M(2/5,2/3)$ the other generator is reducible:
+\[
+ \frac23=\frac25\left(1+\frac23\right).
+\]
+\end{proposition}
+\begin{proof}
+Use the prime $\ell$ in the corresponding row. In every case
+$v_\ell(q)=1$, every element has nonnegative valuation, and every element
+below one has strictly positive valuation, as proved above.
+We first show that an element $s<1$ of valuation one must satisfy $s\ge q$.
+For either mixed pair, a representation of $s$ can contain only monomials
+with $q$-exponent $i\ge1$, since $r>1$. If every term had $i\ge2$, then
+each term and hence the sum would have valuation at least two. Thus some
+term has $i=1$; since $r\ge1$ and its coefficient is positive, that term
+is at least $q$. For the third pair, a constant term is impossible and
+the valuation of a monomial is its total degree. A sum of valuation one
+must therefore contain a degree-one term, which is at least
+$\min(q,r)=q$. This proves the claim in all cases.
+
+If $q=ab$ in $M(q,r)$, the nonnegative integers
+$v_\ell(a),v_\ell(b)$ sum to one. Name the zero-valuation factor $a$.
+It cannot be below one, so $a\ge1$. If $a>1$, then $b=q/a<q<1$ and
+$v_\ell(b)=1$, contradicting the preceding claim. Therefore $a=1$.
+The element $q$ is a nonunit by Proposition~\ref{prop:units}, so it is an atom.
+Finally, the displayed factorization of $2/3$ has both factors in the
+semiring and neither equal to one. Both are nonunits by the unit result.
+\end{proof}
+
+Identifying one atom is not an atomicity theorem. The proposition leaves
+the behavior of all other elements and all atom divisors unclassified.
+
+As a nontrivial construction example, take $(q,r,p)=(4/5,11/8,2)$.
+Then $A=2$, $B=3$, $t=121/125$, and Proposition~\ref{prop:bound} gives
+$K=12$. Hence
+\[
+ (i,j)=(36,25),\qquad
+ q^{36}r^{25}=\frac{11^{25}}{8\cdot5^{36}}<1,\qquad
+ v_2(q^{36}r^{25})=-3.
+\]
+The rational bound need not be sharp. For $(q,r)=(2/3,3/2)$ the
+candidate $p=2$ has $A=B=1$ and $t=1$, so it is ineffective;
+$p=3$ is effective via $q$. This boundary example checks the strict
+inequality in Theorem~\ref{thm:mixed}.
+
+\section{Relation to the open questions}
+Open Problem 1~\cite{cm1} asks for a classification of rational pairs with
+atomic non-IDF or IDF non-atomic multiplicative monoids. No such
+classification is supplied here; our statements concern positive pairs.
+
+For comparison, Deng, Gotti, and Zeng~\cite[Theorem 5.7]{dgz} classify
+the \emph{multiplicative finite factorization} property for a single
+positive rational generator $q$: it holds exactly when $q\ge1$, $q$
+is a unit fraction, or its reduced denominator is a prime power.
+This established one-generator result does not give a classification
+for two generators. Their Theorem 5.8 relates bounded factorizations
+and ACCP. Neither failure of finite factorization nor failure of ACCP
+alone means failure of atomicity.
+
+Dani, Gotti, Li, and Paladiya~\cite[Introduction, footnote 1]{dglp}
+report forthcoming work of Cen et al. on non-atomic rational monogenic
+examples. The cited footnote supplies no proof, and a complete public
+proof was not located in this audit. We record it as an announcement,
+not a theorem verified here. It also does not answer the different
+existence-of-atomic-examples question in Open Problem 2(c).
+
+The project statement~\cite{cm2} reports prior message-board work:
+for a multiplicatively independent mixed pair, at least two effective
+primes together with an ineffective prime divisor of the numerator of $q$
+imply failure of the ascending chain condition on principal ideals (ACCP),
+and failure of atomicity or IDF. That prior result is attributed to the
+project; it is not reproved here or counted as a contribution of this note.
+Both mixed examples satisfy its stated hypotheses. Their independence
+can be checked by valuations: $v_2$ and $v_{19}$ separate the generators
+of the first pair, and $v_3$ and $v_7$ separate those of the second.
+
+The questions recorded in Open Problem 2 ask which property fails for
+the two mixed examples, seek a broader classification, ask whether some
+monogenic example with numerator greater than one and at least two
+denominator primes is atomic, and ask about atomicity and IDF for
+$\NN_0[2/5,2/3]\setminus\{0\}$. This note answers none of these questions.
+The disjunction ``not atomic or not IDF'' does not decide either property
+separately. A finite collection of divisor witnesses cannot decide them.
+
+An atomicity proof would need a factorization argument for every nonunit;
+a non-atomicity proof would need an element with no finite atom
+factorization. An IDF proof must control all nonassociate atom divisors of
+each element. To disprove IDF, one must exhibit an element with infinitely
+many such atom divisors and prove their irreducibility and
+nonassociateness. Trivial units simplify the last issue but settle none
+of the other requirements. These are the missing proof obligations.
+
+\section{Reproducible implementation and verification}
+The companion code uses integer arithmetic and Python's
+\texttt{fractions.Fraction}. The exact prime decision tests only the
+denominator-prime union and handles all cases of Corollary~\ref{cor:all}.
+A positive certificate records a prime, nonnegative integer exponents,
+and the exact monomial value. Verification checks primality, the input
+domain, the exponent domain, equality with the recomputed monomial, and
+both strict inequalities. Acceptance proves effectiveness for that
+prime; completeness of the decision procedure follows from the theorem,
+not from the verifier alone.
+
+The repository's original failure on $(2/5,2/3)$ was a domain mismatch:
+tests included this pair but the exact and bounded routines required
+$0<q<1<r$. Corollary~\ref{cor:all} supplies the missing case. The
+corrected tests cover boundary equality, swapped inputs, generators equal
+to one, invalid inputs, malformed certificates, and independent bounded
+witness checks. The separate script \texttt{paper/verify\_results.py}
+checks the displayed examples and a finite rational grid for the explicit
+bound. These are executable consistency checks, not formal proof-assistant
+verification or a substitute for the proofs above.
+
+Finite enumeration is explicitly budgeted. It certifies membership of
+the elements it produces and factorizations whose factors are present.
+Failure to find a factorization leaves an unverified candidate, not an
+atom. Moreover, a factor unequal to one need not be a nonunit in a general
+semiring; unit information must be supplied or proved separately.
+No empirical search in this software is interpreted as a resolution of
+atomicity or IDF.
+
+\begin{thebibliography}{9}
+\bibitem{dgz}
+Anna Deng, Felix Gotti, and Jason Zeng,
+\emph{Factorizations in rational monogenic semidomains},
+arXiv:2607.10178 (2026).
+\url{https://arxiv.org/abs/2607.10178}.
+\bibitem{dglp}
+Jiya Dani, Felix Gotti, Bryan Li, and Arav Paladiya,
+\emph{Factorizations in algebraic monogenic semidomains},
+arXiv:2609.32138 (2026).
+\url{https://arxiv.org/abs/2609.32138}.
+\bibitem{cm2}
+MIT PRIMES / Art of Problem Solving CrowdMath,
+\emph{Arithmetic Conjectures on Rational Semirings, Open Problem 2},
+updated October 15, 2026; consulted November 1, 2026.
+\url{https://artofproblemsolving.com/polymath/mitprimes2026/p/open-prob2}.
+\bibitem{cm1}
+MIT PRIMES / Art of Problem Solving CrowdMath,
+\emph{Arithmetic Conjectures on Rational Semirings, Open Problem 1},
+consulted November 1, 2026.
+\url{https://artofproblemsolving.com/polymath/mitprimes2026/p/prob1}.
+\end{thebibliography}
+\end{document}
