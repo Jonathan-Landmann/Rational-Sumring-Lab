@@ -1,0 +1,2 @@
+include PROOF.md AUDIT.md
+recursive-include paper *.tex *.py *.md

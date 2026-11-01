@@ -1,31 +1,80 @@
 # Rational Sumring Lab
 
-Independent computational exploration of **Arithmetic Conjectures on Rational Sumrings**, inspired by the 2026 MIT PRIMES CrowdMath problem statement. This is not an official MIT repository and does not claim to resolve an open problem.
+Exact arithmetic and checkable certificates for positive rational semirings
+`N₀[q,r]`. Inspired by [CrowdMath 2026: Arithmetic Conjectures on Rational
+Semirings](https://artofproblemsolving.com/polymath/mitprimes2026), especially
+[Open Problem 2](https://artofproblemsolving.com/polymath/mitprimes2026/p/open-prob2).
+Independent software; no MIT endorsement or open-problem resolution is claimed.
 
-For rational q and r, N₀[q,r] consists of finite sums of nonnegative integer multiples of q^i r^j. Its nonzero elements form a multiplicative monoid.
+## Verified scope
 
-## Features
-- Exact rational arithmetic via Python's fractions.Fraction
-- Bounded enumeration of sumring elements
-- Prime-adic valuations and verifiable witnesses for effective denominator primes
-- Finite divisor searches and tentative irreducibility candidates
-- Automated tests and a command-line interface
+- Exact effective-denominator-prime decisions for **all positive rational pairs**.
+- Constructive witnesses checked from their defining inequalities using exact arithmetic.
+- Bounded semiring enumeration and divisor witnesses with explicit limits.
+- A [LaTeX research note](paper/main.tex) proving the criterion, a rational witness
+  bound, equivalence with denominators of elements below one, and a unit obstruction.
+- Complete elementary proofs that all three examples have only the unit `1` and
+  that their smaller generator is an atom. These do **not** prove atomicity or IDF.
+
+| Pair `(q,r)` | Effective primes | Units | One proved atom |
+|---|---|---|---|
+| `(6/35,19/3)` | `{5,7}` | `{1}` | `6/35` |
+| `(3/10,7/5)` | `{2,5}` | `{1}` | `3/10` |
+| `(2/5,2/3)` | `{3,5}` | `{1}` | `2/5` |
+
+The official effective-prime definition assumes `0<q<1<r`; the third row uses
+our explicit extension to arbitrary positive pairs. Novelty of these elementary
+proofs is **unverified**. The paper distinguishes known literature, reported
+project progress, and results proved here.
 
 ## Run
 
-Python 3.10+; pytest is needed only for tests.
+Python 3.10 or later. Runtime code has no third-party dependencies.
 
-```bash
-python cli.py --q 6/35 --r 19/3 --degree 2 --coefficients 2 --exponents 40 --target 2
-python cli.py --q 3/10 --r 7/5
-python cli.py --q 2/5 --r 2/3
+```sh
+python -m pip install '.[dev]'
+rational-sumring-lab --q 6/35 --r 19/3 --degree 2 --coefficients 2 --target 2
+rational-sumring-lab --q 3/10 --r 7/5
+rational-sumring-lab --q 2/5 --r 2/3
 python -m pytest -q
+python paper/verify_results.py
+python -m build
 ```
 
-## Scientific limitations
+Without installation, use `python cli.py` with the same arguments. The CLI prints
+the exact prime set and certificates by default. `--exponents 40` additionally
+runs a bounded comparison search; missing witnesses prove nothing.
+`--degree` bounds total monomial degree; `--coefficients` bounds the coefficient
+sum. `--max-states` caps total distinct enumerated elements, including zero,
+and raises an error when exceeded. It does not bound initial monomial generation,
+trial division, or exact exponentiation costs.
 
-Finite computation **cannot prove** atomicity, non-atomicity, IDF, or non-IDF for an infinite monoid. Missing witnesses are not evidence of nonexistence. Candidates without factorizations in a finite sample are not certified atoms. Units and associate classes of the full monoid must be characterized independently.
+```python
+from fractions import Fraction
+from certificates import all_certificates
 
-Future work: valuation-based witness bounds, rigorous units and associate-class analysis, symbolic families of divisors, and reproducible experiments for the specified rational pairs.
+q, r = Fraction(2, 5), Fraction(2, 3)
+certificates = all_certificates(q, r)
+assert set(certificates) == {3, 5}
+assert all(c.verify(q, r) for c in certificates.values())
+```
 
-Independent experimental software; no MIT endorsement or mathematical discovery is asserted.
+Numerical API inputs must be `int` or `Fraction`; floats are rejected.
+Certificate exponents must be nonnegative integers and the base must be prime.
+Malformed certificates return `False` from `verify`.
+
+## Research limitations
+
+The multiplicative atomicity and IDF questions remain unresolved by this work.
+Sample divisor pairs certify their factors' membership, not irreducibility.
+`bounded_factorization_candidates` excludes units whose reciprocals occur in
+the sample, but other unit statuses can be unknown. Its output can contain
+reducibles or units and can omit atoms. `bounded_irreducibles` is a compatibility
+alias. Once trivial units have been proved independently, a split with both
+factors unequal to one certifies reducibility; absence of a sampled split still
+does not certify an atom.
+
+See [PROOF.md](PROOF.md), [paper build instructions](paper/README.md), and
+[the audit of failures and changes](AUDIT.md). The paper is a working draft for
+author and mathematical review, not an arXiv submission or a novelty claim.
+
