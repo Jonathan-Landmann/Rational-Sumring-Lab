@@ -17,6 +17,7 @@ jobs:
       - run: python -m pip install '.[dev]'
       - run: python -m pytest -q
       - run: python paper/verify_results.py
+      - run: python paper/verify_non_atomicity.py
       - run: python -m build
       - name: Smoke test installed command outside the checkout
         working-directory: ${{ runner.temp }}

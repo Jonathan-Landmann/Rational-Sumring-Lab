@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rational-sumring-lab"
-version = "0.3.0"
+version = "0.4.0"
 description = "Exact arithmetic and certified experiments for rational sumrings"
 requires-python = ">=3.10"
 
@@ -15,7 +15,7 @@ dev = ["pytest>=8", "build>=1"]
 rational-sumring-lab = "cli:main"
 
 [tool.setuptools]
-py-modules = ["sumrings", "effective_primes", "certificates", "cli"]
+py-modules = ["sumrings", "effective_primes", "certificates", "cli", "dyadic_semiring"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

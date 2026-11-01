@@ -155,7 +155,8 @@ def main():
     print("PASS: strict equality boundary and explicit near-boundary certificate.")
     print(f"PASS: {count} Bernoulli constructions; largest exponent {largest_exponent}.")
     print("These are exhaustive checks of the stated finite grid, not proofs of")
-    print("the general theorems, atomicity, or IDF. See main.tex for proofs and scope.")
+    print("the general theorems, atomicity, or IDF. See effective_primes_note.tex")
+    print("for these proofs, and main.tex for the separate non-atomicity proof.")
 
 
 if __name__ == "__main__":

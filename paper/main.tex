@@ -3,380 +3,545 @@
 \usepackage{lmodern}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm,booktabs}
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \clubpenalty=10000
 \widowpenalty=10000
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newcommand{\NN}{\mathbb N}
+\newcommand{\ZZ}{\mathbb Z}
 \newcommand{\QQ}{\mathbb Q}
-\newcommand{\vp}{v_p}
-\title{Effective Denominator Primes in Rational Semirings:\\
-Exact Criteria, Constructive Certificates, and a Unit Obstruction}
-\author{Rational Sumring Lab\\\small Working research note; author attribution to be reviewed}
+\newcommand{\A}{\mathcal A}
+\title{Atoms and Non-atomicity in the Rational Semiring\\
+$\mathbb N_0[2/5,2/3]$}
+\author{Rational Sumring Lab\\\small Working draft; author attribution to be reviewed}
 \date{November 1, 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
-For positive rational numbers $q,r$, we study the primes that occur in the
-reduced denominator of a monomial $q^ir^j<1$. We give an elementary exact
-criterion valid for every positive rational pair, including pairs with both
-generators below one. In the mixed case, we prove the criterion without
-logarithmic approximation and give an explicit rational bound for constructing
-a witness. We show that the same prime set is detected by all semiring elements
-below one. A separate valuation obstruction proves that the three examples
-highlighted in CrowdMath 2026 Open Problem 2 have trivial multiplicative unit
-groups, and we identify a multiplicative atom in each of those examples.
-These results support exact software certificates. They do not decide
-the atomicity or irreducible-divisor-finiteness questions in that problem.
-No priority or novelty claim is made for the elementary results proved here.
+Let $S=\mathbb N_0[2/5,2/3]$. We prove that its nonzero multiplicative
+monoid is not atomic: the element $3$ has no finite factorization into
+atoms. The proof uses a binary digit map, the sharp real threshold $5/3$
+above which every element of $\mathbb Z[1/15]$ belongs to $S$, and a
+restriction on the denominators of atoms. We also describe all atoms in
+terms of binary polynomials and eventually constant binary expansions,
+and give a terminating exact membership procedure. The IDF property is
+reduced to an explicit finiteness question for irreducible binary
+polynomials and is not decided here. Non-atomicity of this exact semiring
+was announced in a June 2026 CrowdMath post without a written proof;
+we provide a complete argument and credit earlier digit and perturbation
+methods. Priority of the additional results has not been established.
 \end{abstract}
 
-\section{Scope, definitions, and provenance}
-For $q,r\in\QQ_{>0}$, put
+\section{Statement and provenance}
+Throughout, set
 \[
- S(q,r)=\NN_0[q,r]
- =\left\{\sum_{i,j\ge0}c_{ij}q^ir^j:
-       c_{ij}\in\NN_0,\ \text{finitely many }c_{ij}\ne0\right\},
- \qquad M(q,r)=S(q,r)\setminus\{0\}.
+ q=\frac25,\qquad r=\frac23,\qquad h=\frac53=1+r=\frac1{1-q},
+ \qquad R=\ZZ[1/15],\qquad S=\NN_0[q,r],\qquad M=S\setminus\{0\}.
 \]
-Here $M(q,r)$ is a commutative cancellative monoid under multiplication.
-Its units are the elements $u$ such that $u^{-1}\in M(q,r)$. Elements are
-associates if they differ by a unit. An atom is a nonunit $a$ for which
-$a=bc$ in $M(q,r)$ implies that $b$ or $c$ is a unit. A monoid is atomic if
-each nonunit is a finite product of atoms; it is irreducible-divisor finite
-(IDF) if each element has only finitely many nonassociate atom divisors.
-All statements about atoms and IDF in this note concern multiplication,
-not addition.
+The operation on $M$ is multiplication. A unit has its reciprocal in $M$.
+An atom is a nonunit which cannot be expressed as a product of two
+nonunits. A monoid is atomic if every nonunit is a finite product of
+atoms. It is irreducible-divisor finite (IDF) if every element has only
+finitely many atom divisors up to multiplication by units.
 
-The motivation is the official \emph{Arithmetic Conjectures on Rational
-Semirings} project, especially Open Problem 2~\cite{cm2}.
-Its effective-prime definition is stated for $0<q<1<r$; we explicitly extend
-that definition to all positive pairs. The repository retains its historical
-name ``Rational Sumring Lab.''
+\begin{theorem}\label{thm:main}
+The element $3\in M$ has no finite factorization into atoms of $M$.
+Consequently, $M$ is not atomic.
+\end{theorem}
 
-\begin{definition}
-For a prime $p$, let $v_p$ be the integer-valued valuation on $\QQ_{>0}$,
-normalized by $v_p(p)=1$. Define
+This addresses the atomicity part of CrowdMath 2026 Open Problem 2(d)
+\cite{cm2}. Its IDF part remains unresolved in this note. In particular,
+non-atomicity is not used as a reason to infer IDF or non-IDF.
+
+\paragraph{Prior work and attribution.}
+The exact non-atomicity conclusion was announced by the participant
+BakedPotatoz in progress-log post~7 on June 27, 2026, with the proof
+expressly left unwritten~\cite{announcement}. Thus we do not claim first
+discovery of that conclusion. Digit expansions and perturbations by
+technical fractions near one occur in the earlier project writeups
+\cite[Section 4.6]{progress} and \cite[Theorem 2.6]{yayyayyay}.
+The latter also proves valuation bounds for two generators
+\cite[Proposition 3.7]{yayyayyay}. We adapt these methods and give every
+argument needed here, including the restriction on the power of $3$ in
+an atom's denominator and the obstruction to a factorization of $3$.
+A complete earlier proof of this exact conclusion was not located in
+our limited source audit; that does not establish priority. The
+one-generator results of Deng, Gotti, and Zeng~\cite{dgz} supply related
+context but are not invoked to transfer atomicity to this two-generator
+semiring.
+
+This draft was prepared with AI assistance. Its complete written proofs
+and executable consistency checks have undergone independent agent
+review, not human peer review or proof-assistant verification. Author
+attribution, priority, and shared CrowdMath contributions require review
+before submission. No MIT affiliation or endorsement is claimed.
+
+\section{Parity, a prime element, and binary digits}
+Every element of $S$ lies in $R$, and every nonzero element has
+nonnegative valuation at every prime outside $\{3,5\}$. In particular,
+$v_2(x)\ge0$ for $x\in M$. The identities
+\begin{equation}\label{eq:identities}
+ r=q+qr=qh,\qquad h=1+r
+\end{equation}
+will be used repeatedly.
+For any $x\in R$, let $\epsilon(x)\in\{0,1\}$ be its residue modulo
+$2R$, and define
 \[
- E(q,r)=\{p\text{ prime}:\text{ some }i,j\in\NN_0
-       \text{ satisfy }q^ir^j<1\text{ and }v_p(q^ir^j)<0\}.
+ \tau(x)=\frac{x-\epsilon(x)}q.
 \]
-For a positive rational $x$, write $D(x)$ for the prime divisors of its
-denominator in lowest terms.
-\end{definition}
+This lies in $R$: denominators in $R$ are odd, and division of
+$x-\epsilon(x)\in2R$ by $q=2/5$ introduces no new denominator prime.
 
-The proofs below are self-contained elementary derivations. The mixed-case
-criterion already appeared in this repository's earlier proof note; it is
-not presented here as a newly discovered theorem. The additional proofs,
-constructive bound, and implementation repair have not been shown to be new
-relative to the literature or the CrowdMath discussion. This is a
-verification-oriented working note, not a claim to have solved an open problem.
-The draft and accompanying software were prepared with AI assistance and
-require the named authors' mathematical and attribution review before any
-submission. No affiliation with, or endorsement by, MIT or CrowdMath is claimed.
+\begin{lemma}\label{lem:tau}
+The map $\tau$ sends $S$ into $S$. If $x\in R$ and $\tau(x)\in S$,
+then $x\in S$. For $x\in M$, divisibility by $q$ inside $M$ is equivalent
+to $v_2(x)>0$.
+\end{lemma}
+\begin{proof}
+Choose a polynomial representation of $x\in S$ with constant coefficient
+$c$. Every nonconstant monomial has positive $2$-valuation, so
+$c\equiv\epsilon(x)\pmod2$. The nonnegative even integer
+$c-\epsilon(x)$ divided by $q$ is a nonnegative integer. Every
+nonconstant monomial is divisible by $q$ inside $S$: this is immediate
+if its $q$-exponent is positive, and otherwise follows from $r/q=h\in S$.
+Dividing the representation of $x-\epsilon(x)$ by $q$ proves
+$\tau(x)\in S$. The converse follows from
+$x=\epsilon(x)+q\tau(x)$. If $v_2(x)>0$, then $\epsilon(x)=0$ and
+$x/q=\tau(x)\in M$. Conversely, $x=qy$ with $y\in M$ gives
+$v_2(x)=1+v_2(y)>0$.
+\end{proof}
 
-\section{An exact criterion and explicit witnesses}
-The elementary identities used throughout are
+\begin{proposition}\label{prop:split}
+The only unit of $M$ is $1$. The element $q$ is prime, and, writing
+$T=\{x\in M:v_2(x)=0\}$, the map
 \[
- v_p(xy)=v_p(x)+v_p(y),\qquad
- v_p(x_1+\cdots+x_n)\ge\min_k v_p(x_k).
+ \NN_0\times T\longrightarrow M,\qquad (k,t)\longmapsto q^kt
 \]
-The second follows by factoring out the smallest common power of $p$ and
-putting the remaining summands over denominators prime to $p$.
+is a monoid isomorphism, with addition in the first coordinate.
+Every element of $T$ is at least one. In particular, the only atom
+of positive $2$-valuation is $q$.
+\end{proposition}
+\begin{proof}
+If $x\in T$, the constant coefficient in any representation is odd,
+so it is at least one and $x\ge1$. A nontrivial unit would have either
+itself or its inverse below one. That element has positive $2$-valuation,
+so its inverse has negative valuation and cannot lie in $M$.
+The divisibility criterion in Lemma~\ref{lem:tau} and additivity of
+$v_2$ show that $q\mid ab$ implies $q\mid a$ or $q\mid b$.
+Repeated division by $q$ gives $x=q^kt$ with $k=v_2(x)$ and $t\in T$;
+these values determine both factors uniquely. This proves the
+isomorphism. Since $q$ is a nonunit prime, it is an atom, and every
+other element of positive valuation has a nontrivial factorization
+with a factor $q$.
+\end{proof}
 
-\begin{theorem}[Mixed-case criterion]\label{thm:mixed}
-Suppose $0<q<1<r$, and fix a prime $p$. Set $A=v_p(q)$ and $C=v_p(r)$.
-Then
+Set $c_i(x)=\epsilon(\tau^i(x))$ and
+$\mu_k(x)=\sum_{i=0}^{k-1}c_i(x)q^i$. Iteration gives
+\begin{equation}\label{eq:prefix}
+ x=\mu_k(x)+q^k\tau^k(x).
+\end{equation}
+If $x-y\in2^kR$, their first $k$ digits agree and
+\begin{equation}\label{eq:congruence}
+ \tau^k(x)-\tau^k(y)=q^{-k}(x-y).
+\end{equation}
+Indeed, their parities initially agree, and division by $q$ lowers
+the guaranteed $2$-divisibility by one; induction proves both statements.
+The identities hold for every $x,y\in R$, including negative iterates.
+
+\section{A sharp membership threshold}
+\begin{lemma}\label{lem:coarse}
+Every $x\in R$ with $x\ge20/3$ belongs to $S$.
+\end{lemma}
+\begin{proof}
+Write the denominator of $x$ as $3^a5^b$. The Chinese remainder theorem
+splits its class modulo $\ZZ$ into a class with denominator $5^b$ and
+one with denominator $3^a$.
+Every class with denominator $5^b$ has a representative
+$u=\sum_{i=1}^b e_iq^i$ with $0\le e_i\le4$: at the highest degree,
+choose $e_b$ so that $e_b2^b$ matches the target numerator modulo $5$,
+subtract that term, and divide the remaining numerator by $5$.
+The same induction at the lower degrees finishes the construction.
+Similarly, every class with denominator $3^a$ has a representative
+$v=\sum_{j=1}^a f_jr^j$ with $0\le f_j\le2$.
+These nonnegative representatives lie in $S$ and satisfy
 \[
- p\in E(q,r)\quad\Longleftrightarrow\quad
- A<0\quad\text{or}\quad
- \bigl(A\ge0,\ C<0,\ q^{-C}r^A<1\bigr).
+ u<4\sum_{i\ge1}q^i=\frac83,
+ \qquad v<2\sum_{j\ge1}r^j=4.
 \]
+Consequently $x-u-v$ is a nonnegative integer when $x\ge20/3$,
+which proves $x\in S$.
+\end{proof}
+
+\begin{theorem}\label{thm:conductor}
+Every $x\in R$ with $x\ge h=5/3$ lies in $S$.
+No smaller real threshold has this property.
 \end{theorem}
 \begin{proof}
-If $A<0$, the monomial $q$ is a witness. If $A,C\ge0$, every monomial has
-nonnegative valuation, so there is no witness.
+Since $h(1-q)=1$ and $\epsilon(x)\le1$,
+\begin{equation}\label{eq:growth}
+ \tau(x)-h=q^{-1}\bigl(x-h+1-\epsilon(x)\bigr)
+ \ge q^{-1}(x-h).
+\end{equation}
+For $x>h$, its iterates stay above $h$ and eventually exceed $20/3$.
+Lemma~\ref{lem:coarse} places that iterate in $S$, and repeated use of
+Lemma~\ref{lem:tau} places $x$ in $S$. The endpoint $h=1+r$ also lies
+in $S$.
 
-It remains to treat $A\ge0$ and $C=-B<0$, where $B$ is a positive integer.
-Put $t=q^Br^A$. For any witness $m=q^ir^j$, we have $i>0$ and $Bj-Ai>0$.
-If $t\ge1$, then
-\[
- m^B=q^{Bi}r^{Bj}=t^i r^{Bj-Ai}>1,
-\]
-contrary to $m<1$. Thus $t<1$ is necessary. If $t<1$, choose a positive
-integer $k$ with $rt^k<1$. Such a $k$ exists since $t^k\to0$.
-Taking $i=Bk$ and $j=Ak+1$ gives
-\[
- q^ir^j=rt^k<1,\qquad Ai-Bj=-B<0.
-\]
-The next proposition gives an explicit choice of $k$ using rational
-arithmetic alone.
+For sharpness let $x_n=h-2q^n$ for $n\ge1$. These are positive
+members of $R$, increase to $h$, and differ from $h$ by an element
+of $2^{n+1}R$. Since $\tau(h)=h$, equation~\eqref{eq:congruence} gives
+$\tau^n(x_n)=h-2=-1/3$. Such an iterate is impossible for an element
+of $S$, by Lemma~\ref{lem:tau}. Thus $x_n\notin S$.
 \end{proof}
 
-\begin{proposition}[A rational witness bound]\label{prop:bound}
-In the final case of Theorem~\ref{thm:mixed}, suppose $t=q^Br^A<1$. Set
+Let $G=\{3^a5^b:a,b\in\ZZ\}$, the group of positive units of $R$.
+Its intersection with $M$ is the monoid of technical fractions; it is
+smaller than $T$, which only requires zero $2$-valuation.
+
+\begin{lemma}\label{lem:small}
+For every $L\in\NN_0$ and $\eta>0$, there is $y\in M\cap G$ with
+$1<y<1+\eta$ and $y\equiv1\pmod{2^LR}$.
+\end{lemma}
+\begin{proof}
+Choose $j\ge\max(1,L)$ with $hq^j<\eta$.
+The subgroup generated by $3^{2^j}$ and $5^{2^j}$ is dense in
+$\mathbb R_{>0}$. To see this, unique prime factorization makes
+$\log3/\log5$ irrational; integer combinations of these logarithms
+are dense in $\mathbb R$, and multiplication by $2^j$ preserves
+this density. Equivalently, arbitrarily small nonzero combinations
+follow from the pigeonhole principle, and their integer multiples
+approximate any real number.
+Choose $y$ in that subgroup satisfying
 \[
- K=\left\lfloor\frac{(r-1)t}{1-t}\right\rfloor+1.
+ 1+hq^j<y<1+\eta.
 \]
-Then $K\ge1$, and $(i,j)=(BK,AK+1)$ is a witness. In particular, the least
-positive integer $k$ with $rt^k<1$ satisfies $k\le K$.
+Euler's theorem for odd residues modulo $2^j$ shows that the subgroup
+is contained in $1+2^jR$, including its negative powers.
+Thus $z=(y-1)/q^j$ lies in $R$ and exceeds $h$.
+Theorem~\ref{thm:conductor} gives $z\in S$, and
+$y=1+q^jz\in M\cap G$ has all the required properties.
+\end{proof}
+
+\section{Restricting the atoms}
+Define the set
+\[
+ \mathcal B=\{x\in S:0\le\tau^k(x)\le h\text{ for every }k\in\NN_0\}.
+\]
+It is essential here that membership in $S$ is part of this definition.
+
+\begin{lemma}\label{lem:atomsboundary}
+Every atom other than $q$ belongs to $T\cap\mathcal B$ and exceeds one.
+\end{lemma}
+\begin{proof}
+Proposition~\ref{prop:split} gives membership in $T$ and $x>1$.
+Suppose $\tau^k(x)>h$ for some $k\ge0$.
+Choose $\eta>0$ so small that $1+\eta<x$ and
+\[
+ x\left(1-\frac1{1+\eta}\right)
+ <q^k\bigl(\tau^k(x)-h\bigr).
+\]
+Lemma~\ref{lem:small} supplies a technical fraction $y$ with
+$1<y<1+\eta$ and $y\equiv1\pmod{2^kR}$.
+Because $y$ is a unit of $R$, $x/y\in R$ and $x/y\equiv x\pmod{2^kR}$.
+Equation~\eqref{eq:congruence} therefore gives
+\[
+ \tau^k(x/y)=\tau^k(x)-\frac{x-x/y}{q^k}>h.
+\]
+The conductor theorem and the backward implication of
+Lemma~\ref{lem:tau} give $x/y\in S$.
+Both $y$ and $x/y$ exceed one, contradicting the assumption that $x$
+is an atom.
+\end{proof}
+
+\begin{lemma}\label{lem:nooverlap}
+No element $x\in\mathcal B$ can be written as $2q^n+z$ with
+$n\in\NN_0$ and $z\in S$.
+\end{lemma}
+\begin{proof}
+Since $x-z=2q^n\in2^{n+1}R$, their first $n$ digits agree. Hence
+$\tau^n(x)=2+\tau^n(z)\ge2>h$, a contradiction.
+\end{proof}
+
+\begin{proposition}\label{prop:forms}
+An element $x\in S$ admits no expression $2q^n+z$ as in
+Lemma~\ref{lem:nooverlap} if and only if it has one of the forms
+\begin{align}
+ x&=P(q),\label{eq:finite}\\
+ x&=P(q)+q^nr,\quad n\ge0,\quad\deg P\le n,\label{eq:tail}
+\end{align}
+where $P$ has coefficients in $\{0,1\}$ (and the zero polynomial is
+allowed). These elements are exactly $\mathcal B$.
+An element of the second form has $v_3(x)=-1$.
 \end{proposition}
 \begin{proof}
-Let $\delta=t^{-1}-1=(1-t)/t>0$. The definition of $K$ gives
-$K\delta>r-1$. The binomial theorem implies
-\[
- t^{-K}=(1+\delta)^K\ge1+K\delta>r,
-\]
-so $rt^K<1$. Its valuation at the displayed exponent pair is $-B$, as in
-the preceding proof. The strict inequality in the definition of $K$ is
-essential; replacing it by a potentially equal endpoint is not justified.
+Choose any nonnegative polynomial representation in $q,r$.
+A term $q^ir^j$ with $j\ge2$ yields a summand $2q^{i+j+1}$:
+expand $r^j=q^j(1+r)^j$, retain the term $j q^jr$, and use
+$r=q+qr$. All discarded terms remain in $S$.
+Consequently every $r$-exponent is at most one.
+Two linear $r$-terms, including two copies of the same term,
+also yield an overlap, because for $N>i$,
+\begin{equation}\label{eq:tailidentity}
+ q^ir=\sum_{m=i+1}^{N}q^m+q^Nr.
+\end{equation}
+Choosing $N$ large enough exposes a common power of $q$ in both terms.
+Thus there is at most one linear $r$-term, with coefficient one.
+Pure $q$-terms have coefficients at most one; if the linear term is
+$q^nr$, no pure term can have degree greater than $n$, again by
+\eqref{eq:tailidentity}. This proves the asserted forms.
+
+Conversely, their digit iterates remain in $[0,h]$. A finite binary
+polynomial loses its constant digit at each application of $\tau$
+and eventually reaches zero. For \eqref{eq:tail}, after $n$ steps
+one reaches either $r$ or $1+r=h$; moreover $\tau(r)=h$ and
+$\tau(h)=h$. Each preceding binary prefix with its remaining tail
+is at most $\sum_{i\ge0}q^i=h$. Thus both forms belong to
+$\mathcal B$, and Lemma~\ref{lem:nooverlap} excludes an expression
+$2q^n+z$.
+If $P=0$, the final assertion is immediate. Otherwise,
+$v_3(P(q))\ge0$ while $v_3(q^nr)=-1$, so the latter valuation
+cannot cancel and $v_3(x)=-1$.
 \end{proof}
 
-\begin{corollary}[All positive rational pairs]\label{cor:all}
-The set $E(q,r)$ is determined as follows.
+\begin{corollary}\label{cor:denominator}
+Every atom other than $q$ lies in $(1,5/3]$ and has reduced denominator
+with exponent at most one at the prime $3$.
+\end{corollary}
+
+\section{Why the element 3 has no atom factorization}
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+If $3$ were a product of atoms, every factor would be technical.
+Indeed, valuations outside $\{3,5\}$ are nonnegative on $M$ and sum
+to zero in a factorization of $3$. No numerator prime outside
+$\{3,5\}$ can therefore occur in any factor. In particular $q$
+cannot be a factor.
+
+Let $a$ be any technical atom. By Corollary~\ref{cor:denominator},
+$1<a\le5/3$ and $v_3(a)\ge-1$.
+If $v_3(a)=-1$, technicality gives $a=5^m/3$ for some integer $m$.
+The interval restriction forces $m=1$, so $a=h$.
+Otherwise $a=3^A/5^B$ with integers $A>B\ge1$: nonnegative
+$5$-valuation would make $a$ an integer greater than one, hence at
+least $3$; and $a>1$ forces $A>B$.
+
+Consider the additive valuation weight $\delta=v_3+v_5$ on $G$.
+The candidate $h$ has $\delta(h)=0$; every other technical atom has
+$\delta(a)=A-B\ge1$. Equality to one would require
+\[
+ a=\frac{3^{B+1}}{5^B}=3(3/5)^B.
+\]
+For $B=1$ this is $9/5>5/3$; for $B\ge3$ it is at most
+$81/125<1$. The only remaining value is $27/25$ at $B=2$.
+But
+\[
+ \tau(27/25)=1/5,\qquad \tau^2(27/25)=-2,
+\]
+so $27/25\notin S$ by Lemma~\ref{lem:tau}.
+Thus a technical atom has weight either zero or at least two.
+No finite sum of these weights can equal $\delta(3)=1$.
+This rules out every finite atom factorization of $3$.
+\end{proof}
+
+The proof does not rely on an exhaustive search for atoms. The restriction
+on their denominators applies to every representation of every possible
+atom, and the final weight argument excludes arbitrarily long products.
+
+\section{A complete description of the atoms}
+A binary polynomial is a polynomial whose coefficients are zero or one.
+Irreducibility below is in the polynomial semiring $\NN_0[X]$, whose
+only multiplicative unit is the constant polynomial $1$.
+
+\begin{theorem}\label{thm:classification}
+The atoms of $M$ are exactly:
 \begin{enumerate}
-\item If $q,r\ge1$, then $E(q,r)=\varnothing$.
-\item If $q,r\le1$, then $E(q,r)=D(q)\cup D(r)$.
-\item If one generator is below one and the other is above one, reorder
-them as $u<1<v$ and apply Theorem~\ref{thm:mixed} to $(u,v)$.
+\item $q$;
+\item $P(q)$, where $P$ is a nonconstant binary polynomial with $P(0)=1$
+which is irreducible in $\NN_0[X]$;
+\item $P(q)+q^nr$, where $n\ge0$, $P$ is binary, $P(0)=1$, and
+$\deg P\le n$.
 \end{enumerate}
-The first two cases agree at $(q,r)=(1,1)$. Cases with one generator equal
-to one are included. Only primes in $D(q)\cup D(r)$ need to be tested.
+Repetitions within the third description are harmless. Its canonical
+form is $h$, or $n\ge1$ with $\deg P<n$.
+\end{theorem}
+\begin{proof}
+Lemmas~\ref{lem:atomsboundary} and \ref{lem:nooverlap}, together with
+Proposition~\ref{prop:forms}, prove that every atom other than $q$
+has one of the two displayed forms with constant digit one.
+
+Suppose $x\in\mathcal B\cap T$ has a factorization $x=ab$ with both
+factors different from one. Additivity of $v_2$ gives $v_2(a)=v_2(b)=0$.
+If a factor contained a summand $2q^k$,
+choose any monomial in a representation of the other factor and
+expand $r=q(1+r)$ to extract a pure power of $q$. Their product would
+contain $2q^N$, contrary to Lemma~\ref{lem:nooverlap}.
+Thus both factors have the forms of Proposition~\ref{prop:forms},
+with constant digit one.
+If one factor has a linear $r$-term, its product with the other's
+constant term supplies one tail, and its product with any nonconstant
+term of the other supplies another tail or an $r^2$-term. The finite
+expansions in the proof of Proposition~\ref{prop:forms} then produce
+$2q^N$, again a contradiction. Therefore both factors are finite
+binary polynomials evaluated at $q$.
+
+This already proves that every element in item 3 is an atom:
+it has $3$ in its denominator, while a product of two finite
+polynomial values has denominator supported on $5$ alone.
+For item 2, write the factors as $F(q),G(q)$. Their polynomial
+product has binary coefficients, since any coefficient at least two
+would give a forbidden summand $2q^N$.
+Evaluation at $q<1/2$ is injective on binary polynomials: at the
+first differing degree $k$, the absolute contribution $q^k$
+exceeds the sum of all possible later contributions,
+$q^{k+1}/(1-q)<q^k$.
+Hence $P(q)=F(q)G(q)$ implies the polynomial identity $P=FG$.
+Conversely, a nontrivial factorization of a binary polynomial
+$P$ with constant term one in $\NN_0[X]$ necessarily has binary
+factors with constant term one, and their values at $q$ exceed one.
+It gives a nontrivial factorization in $M$.
+Finally, if the coefficient of $X^n$ in the tail form is one,
+$q^n+q^nr=q^{n-1}r$ reduces $n$ when $n\ge1$.
+Repeatedly doing so gives the canonical forms stated.
+\end{proof}
+
+\begin{corollary}
+The elements $h=5/3$, $1+q^n$ for $n\ge1$, and $1+q^nr$ for
+$n\ge0$ are atoms. There are infinitely many atoms tending to one
+from above.
 \end{corollary}
 \begin{proof}
-In the first case no monomial is below one. In the second case any
-denominator prime of either generator is witnessed by that generator:
-a generator with a nontrivial denominator is strictly below one in this
-case. Conversely, outside $D(q)\cup D(r)$ both generator valuations are
-nonnegative. This also proves the final assertion. Swapping generators
-swaps the witness exponents and changes neither the semiring nor $E$.
+The tail family follows from item 3. If $1+X^n=FG$ is a nontrivial
+factorization in $\NN_0[X]$, then $F(0)=G(0)=1$ and
+$0<\deg F<n$. The leading term of $F$ times $G(0)$ forces a positive
+coefficient in degree $\deg F$, a contradiction. Item 2 applies.
+The limits and distinctness follow from $0<q<1$.
 \end{proof}
 
-\begin{remark}[What the bound does and does not provide]
-Proposition~\ref{prop:bound} proves termination, not a polynomial bit-complexity
-bound. The integer $K$ can be large when $t$ is close to one, and the
-numerator and denominator of a certificate can be large. One may find the
-least $k$ in the special family $(Bk,Ak+1)$ by doubling an upper bound and
-then binary search on the monotone predicate $rt^k<1$. This does not find
-a globally smallest exponent pair. All comparisons remain exact.
-\end{remark}
+\section{Exact membership and the remaining IDF question}
+\begin{theorem}\label{thm:membership}
+Membership in $S$ is decided by the following exact procedure.
+Reject a rational outside $R$ or below zero. For $x\in R_{\ge0}$,
+iterate $\tau$, accepting upon reaching $0$ or a value at least $h$,
+and rejecting upon reaching a negative value or repeating a previous
+value without having accepted. This procedure terminates.
+\end{theorem}
+\begin{proof}
+Acceptance is justified by Theorem~\ref{thm:conductor} and repeated
+backward use of Lemma~\ref{lem:tau}. A negative iterate is impossible
+for a member of $S$.
+If a cycle is reached before acceptance and the original $x$ belonged
+to $S$, all its iterates would be in $[0,h]$, so
+Proposition~\ref{prop:forms} would apply. Those forms reach either
+$0$ or $h$, as its proof shows, contradicting the detected cycle.
 
-\section{Denominators of sums and an obstruction to units}
-\begin{proposition}\label{prop:sums}
-A prime $p$ lies in $E(q,r)$ if and only if some $x\in S(q,r)$ satisfies
-$0<x<1$ and $v_p(x)<0$. If $p\in E(q,r)$, then for every $\varepsilon>0$
-and positive integer $L$, some $x\in S(q,r)$ satisfies
-$0<x<\varepsilon$ and $v_p(x)\le-L$.
+Write the initial reduced denominator as $3^a5^b$.
+Each application of $\tau$ decreases the exponent of $5$ by one
+when it is positive, and never increases the exponent of $3$.
+After at most $b$ steps the iterates have denominators dividing $3^a$.
+Unless the procedure stops earlier, they stay in the bounded interval
+$[0,h)$, which contains only finitely many points of $3^{-a}\ZZ$.
+A repeat must therefore occur. This proves termination, not a
+polynomial-time complexity bound.
+\end{proof}
+
+For an atom $a\ne q$, let
+\[
+ d(a)=\prod_{p\notin\{3,5\}}p^{v_p(a)}.
+\]
+This is a positive integer coprime to $30$; its $2$-valuation is zero.
+
+\begin{proposition}\label{prop:idf}
+For every integer $d\ge1$ coprime to $30$, let
+$\A_d=\{a\in\A(M)\setminus\{q\}:d(a)=d\}$.
+Every member of $\A_d$ divides $3d$ in $M$.
+The monoid $M$ is IDF if and only if each set $\A_d$ is finite.
 \end{proposition}
 \begin{proof}
-A monomial witness is itself such an element. Conversely, write $x$ as a
-finite sum of nonzero terms $c_{ij}q^ir^j$, with $c_{ij}\in\NN$.
-The valuation inequality forces at least one term to have negative
-valuation. Since $v_p(c_{ij})\ge0$, its monomial has negative valuation.
-Positivity and $c_{ij}\ge1$ give $q^ir^j\le c_{ij}q^ir^j\le x<1$.
-This monomial witnesses effectiveness. Finally, powers $m^n$ of any
-monomial witness tend to zero, and $v_p(m^n)=nv_p(m)\to-\infty$.
+For $a\in\A_d$, the rational $3d/a$ belongs to $R$, because all
+numerator primes of $a$ outside $\{3,5\}$ are cancelled by $d$.
+Also $a\le h$, so $3d/a\ge3/h=9/5>h$.
+The conductor theorem puts $3d/a$ in $M$.
+If $M$ is IDF, trivial units and this divisibility force each
+$\A_d$ to be finite.
+Conversely, for fixed $x\in M$, an atom divisor other than $q$ has
+$d(a)$ dividing the fixed positive integer
+$\prod_{p\notin\{3,5\}}p^{v_p(x)}$. There are only finitely many
+such divisors $d$, and a finite union of the corresponding finite
+sets, together with $q$, contains all atom divisors of $x$.
 \end{proof}
 
-\begin{proposition}[Sufficient condition for trivial units]\label{prop:units}
-Suppose a prime $\ell$ satisfies
+The tail atoms in any fixed $\A_d$ are finite in number.
+For a canonical tail with $n\ge1$, its reduced numerator is
 \[
- v_\ell(q)\ge0,\quad v_\ell(r)\ge0,\qquad
- v_\ell(g)>0\text{ for every }g\in\{q,r\}\text{ with }g<1.
+ N=3\sum_{k=0}^{n-1}\epsilon_k2^k5^{n-k}+2^{n+1}.
 \]
-Then $M(q,r)^\times=\{1\}$.
-\end{proposition}
-\begin{proof}
-Every nonzero element of $S(q,r)$ has nonnegative $\ell$-valuation.
-A monomial below one must involve a generator below one with positive
-exponent. The hypotheses therefore give valuation at least one for
-each such monomial. If $0<x<1$ belongs to $S(q,r)$, every nonzero term
-in a polynomial representation is below one. As in
-Proposition~\ref{prop:sums}, its underlying monomial is below one.
-Every term has valuation at least one, so $v_\ell(x)\ge1$.
-If a unit $u\ne1$ existed, either $u$ or $u^{-1}$ would be below one.
-Its inverse would have negative $\ell$-valuation, contradicting membership
-in $S(q,r)$. Thus the only unit is $1$.
-\end{proof}
+It is odd and divisible by neither $3$ nor $5$, so $d=N$.
+Since $1<a\le h$, it satisfies $3\cdot5^n<d\le5\cdot5^n$.
+These intervals are disjoint for different $n$, and binary evaluation
+is injective for fixed $n$. Thus there is at most one such tail for
+a given $d$, in addition to the separately listed atom $h$ with $d=1$.
 
-We use this as a sufficient criterion and make no classification of unit
-groups for arbitrary pairs.
+Consequently, IDF is equivalent to the following precise finiteness
+statement: for every fixed $d$ coprime to $30$, there are only finitely
+many nonconstant irreducible binary polynomials $P\in\NN_0[X]$ with
+$P(0)=1$ such that
+\begin{equation}\label{eq:idfremaining}
+ 5^{\deg P}P(2/5)=d\,3^A\qquad\text{for some }A\in\NN_0.
+\end{equation}
+Indeed the numerator on the left is odd and not divisible by $5$,
+so this is exactly the finite-polynomial part of the fiber condition.
+No proof or counterexample to this finiteness statement is supplied
+here. Infinite atom families alone do not disprove IDF: their numerator
+prime factors can change, so they need not divide one fixed element.
 
-\section{The three specified examples}
-The following table records results proved here. The auxiliary prime
-$\ell$ certifies the unit group by Proposition~\ref{prop:units}; it is
-not required to be a denominator prime.
-\begin{center}
-\begin{tabular}{@{}llll@{}}
-\toprule
-$(q,r)$ & $E(q,r)$ & $\ell$ & $M(q,r)^\times$\\
-\midrule
-$(6/35,19/3)$ & $\{5,7\}$ & $2$ & $\{1\}$\\
-$(3/10,7/5)$ & $\{2,5\}$ & $3$ & $\{1\}$\\
-$(2/5,2/3)$ & $\{3,5\}$ & $2$ & $\{1\}$\\
-\bottomrule
-\end{tabular}
-\end{center}
+\section{Implementation and checks}
+The companion implementation uses integers and exact rational arithmetic.
+The module \path{dyadic_semiring.py} implements the parity map and the
+terminating membership procedure. Positive decisions supply polynomial
+certificates; negative decisions supply a domain obstruction or an exact
+rejection trajectory. A separate verifier checks the supplied evidence.
+The conductor construction supplies explicit nonnegative sums in $q,r$.
+The finite checks in \path{paper/verify_non_atomicity.py} verify
+identities, prefix congruences, certificate values, and the exceptional
+candidate $27/25$. They also check representative parameters of the
+proved families. The general non-atomicity and classification theorems
+are established by the written arguments, not by finite testing.
 
-For the first pair, $q$ witnesses $5$ and $7$. The only remaining
-denominator prime is $3$, with $A=1$, $B=1$, and
-$t=qr=114/105=38/35>1$, so it is ineffective. Also
-$v_2(q)=1$ and $v_2(r)=0$, which verifies the unit obstruction.
-For the second pair, $q$ witnesses both denominator primes $2,5$;
-$v_3(q)=1$ and $v_3(r)=0$ verify the unit obstruction.
-For the third pair, both generators are below one: $r$ witnesses $3$
-and $q$ witnesses $5$, while both have $2$-valuation one.
-Thus associates are equal in all three monoids. Nothing in these arguments
-establishes that their nonunits factor into atoms.
-
-\begin{proposition}[A specified atom in each example]\label{prop:atom}
-In each row of the table, the generator $q$ is a multiplicative atom.
-In $M(2/5,2/3)$ the other generator is reducible:
-\[
- \frac23=\frac25\left(1+\frac23\right).
-\]
-\end{proposition}
-\begin{proof}
-Use the prime $\ell$ in the corresponding row. In every case
-$v_\ell(q)=1$, every element has nonnegative valuation, and every element
-below one has strictly positive valuation, as proved above.
-We first show that an element $s<1$ of valuation one must satisfy $s\ge q$.
-For either mixed pair, a representation of $s$ can contain only monomials
-with $q$-exponent $i\ge1$, since $r>1$. If every term had $i\ge2$, then
-each term and hence the sum would have valuation at least two. Thus some
-term has $i=1$; since $r\ge1$ and its coefficient is positive, that term
-is at least $q$. For the third pair, a constant term is impossible and
-the valuation of a monomial is its total degree. A sum of valuation one
-must therefore contain a degree-one term, which is at least
-$\min(q,r)=q$. This proves the claim in all cases.
-
-If $q=ab$ in $M(q,r)$, the nonnegative integers
-$v_\ell(a),v_\ell(b)$ sum to one. Name the zero-valuation factor $a$.
-It cannot be below one, so $a\ge1$. If $a>1$, then $b=q/a<q<1$ and
-$v_\ell(b)=1$, contradicting the preceding claim. Therefore $a=1$.
-The element $q$ is a nonunit by Proposition~\ref{prop:units}, so it is an atom.
-Finally, the displayed factorization of $2/3$ has both factors in the
-semiring and neither equal to one. Both are nonunits by the unit result.
-\end{proof}
-
-Identifying one atom is not an atomicity theorem. The proposition leaves
-the behavior of all other elements and all atom divisors unclassified.
-
-As a nontrivial construction example, take $(q,r,p)=(4/5,11/8,2)$.
-Then $A=2$, $B=3$, $t=121/125$, and Proposition~\ref{prop:bound} gives
-$K=12$. Hence
-\[
- (i,j)=(36,25),\qquad
- q^{36}r^{25}=\frac{11^{25}}{8\cdot5^{36}}<1,\qquad
- v_2(q^{36}r^{25})=-3.
-\]
-The rational bound need not be sharp. For $(q,r)=(2/3,3/2)$ the
-candidate $p=2$ has $A=B=1$ and $t=1$, so it is ineffective;
-$p=3$ is effective via $q$. This boundary example checks the strict
-inequality in Theorem~\ref{thm:mixed}.
-
-\section{Relation to the open questions}
-Open Problem 1~\cite{cm1} asks for a classification of rational pairs with
-atomic non-IDF or IDF non-atomic multiplicative monoids. No such
-classification is supplied here; our statements concern positive pairs.
-
-For comparison, Deng, Gotti, and Zeng~\cite[Theorem 5.7]{dgz} classify
-the \emph{multiplicative finite factorization} property for a single
-positive rational generator $q$: it holds exactly when $q\ge1$, $q$
-is a unit fraction, or its reduced denominator is a prime power.
-This established one-generator result does not give a classification
-for two generators. Their Theorem 5.8 relates bounded factorizations
-and ACCP. Neither failure of finite factorization nor failure of ACCP
-alone means failure of atomicity.
-
-Dani, Gotti, Li, and Paladiya~\cite[Introduction, footnote 1]{dglp}
-report forthcoming work of Cen et al. on non-atomic rational monogenic
-examples. The cited footnote supplies no proof, and a complete public
-proof was not located in this audit. We record it as an announcement,
-not a theorem verified here. It also does not answer the different
-existence-of-atomic-examples question in Open Problem 2(c).
-
-The project statement~\cite{cm2} reports prior message-board work:
-for a multiplicatively independent mixed pair, at least two effective
-primes together with an ineffective prime divisor of the numerator of $q$
-imply failure of the ascending chain condition on principal ideals (ACCP),
-and failure of atomicity or IDF. That prior result is attributed to the
-project; it is not reproved here or counted as a contribution of this note.
-Both mixed examples satisfy its stated hypotheses. Their independence
-can be checked by valuations: $v_2$ and $v_{19}$ separate the generators
-of the first pair, and $v_3$ and $v_7$ separate those of the second.
-
-The questions recorded in Open Problem 2 ask which property fails for
-the two mixed examples, seek a broader classification, ask whether some
-monogenic example with numerator greater than one and at least two
-denominator primes is atomic, and ask about atomicity and IDF for
-$\NN_0[2/5,2/3]\setminus\{0\}$. This note answers none of these questions.
-The disjunction ``not atomic or not IDF'' does not decide either property
-separately. A finite collection of divisor witnesses cannot decide them.
-
-An atomicity proof would need a factorization argument for every nonunit;
-a non-atomicity proof would need an element with no finite atom
-factorization. An IDF proof must control all nonassociate atom divisors of
-each element. To disprove IDF, one must exhibit an element with infinitely
-many such atom divisors and prove their irreducibility and
-nonassociateness. Trivial units simplify the last issue but settle none
-of the other requirements. These are the missing proof obligations.
-
-\section{Reproducible implementation and verification}
-The companion code uses integer arithmetic and Python's
-\texttt{fractions.Fraction}. The exact prime decision tests only the
-denominator-prime union and handles all cases of Corollary~\ref{cor:all}.
-A positive certificate records a prime, nonnegative integer exponents,
-and the exact monomial value. Verification checks primality, the input
-domain, the exponent domain, equality with the recomputed monomial, and
-both strict inequalities. Acceptance proves effectiveness for that
-prime; completeness of the decision procedure follows from the theorem,
-not from the verifier alone.
-
-The repository's original failure on $(2/5,2/3)$ was a domain mismatch:
-tests included this pair but the exact and bounded routines required
-$0<q<1<r$. Corollary~\ref{cor:all} supplies the missing case. The
-corrected tests cover boundary equality, swapped inputs, generators equal
-to one, invalid inputs, malformed certificates, and independent bounded
-witness checks. The separate script \texttt{paper/verify\_results.py}
-checks the displayed examples and a finite rational grid for the explicit
-bound. These are executable consistency checks, not formal proof-assistant
-verification or a substitute for the proofs above.
-
-Finite enumeration is explicitly budgeted. It certifies membership of
-the elements it produces and factorizations whose factors are present.
-Failure to find a factorization leaves an unverified candidate, not an
-atom. Moreover, a factor unequal to one need not be a nonunit in a general
-semiring; unit information must be supplied or proved separately.
-No empirical search in this software is interpreted as a resolution of
-atomicity or IDF.
+The earlier effective-prime algorithms and their proofs are retained
+in \path{paper/effective_primes_note.tex}. Their scope is separate
+from the atom classification proved here. Regression tests continue
+to check the other two requested rational pairs. The broader mixed-pair
+atomicity and IDF problems are not resolved by this paper.
 
 \begin{thebibliography}{9}
-\bibitem{dgz}
-Anna Deng, Felix Gotti, and Jason Zeng,
-\emph{Factorizations in rational monogenic semidomains},
-arXiv:2607.10178 (2026).
-\url{https://arxiv.org/abs/2607.10178}.
-\bibitem{dglp}
-Jiya Dani, Felix Gotti, Bryan Li, and Arav Paladiya,
-\emph{Factorizations in algebraic monogenic semidomains},
-arXiv:2609.32138 (2026).
-\url{https://arxiv.org/abs/2609.32138}.
+\raggedright
 \bibitem{cm2}
 MIT PRIMES / Art of Problem Solving CrowdMath,
 \emph{Arithmetic Conjectures on Rational Semirings, Open Problem 2},
 updated October 15, 2026; consulted November 1, 2026.
 \url{https://artofproblemsolving.com/polymath/mitprimes2026/p/open-prob2}.
-\bibitem{cm1}
-MIT PRIMES / Art of Problem Solving CrowdMath,
-\emph{Arithmetic Conjectures on Rational Semirings, Open Problem 1},
-consulted November 1, 2026.
-\url{https://artofproblemsolving.com/polymath/mitprimes2026/p/prob1}.
+\bibitem{announcement}
+BakedPotatoz (CrowdMath participant),
+\emph{Crowdmath 2026 Progress Log}, post 7, June 27, 2026.
+\url{https://artofproblemsolving.com/polymath/mitprimes2026/f/c4514724h3837652_crowdmath_2026_progress_log}.
+\bibitem{progress}
+CrowdMath participants, \emph{Crowdmath 2026 Progress Log},
+consolidated forum draft, consulted November 1, 2026, Section 4.6.
+\url{https://cdn.artofproblemsolving.com/attachments/2/6/b981b69621745784dbd3f49ce0a5111f1b8352.pdf}.
+\bibitem{yayyayyay}
+yayyayyay (CrowdMath participant), \emph{CrowdMath 2026 Progress},
+forum draft, consulted November 1, 2026, Theorem 2.6 and Proposition 3.7.
+\url{https://cdn.artofproblemsolving.com/attachments/9/3/c0de521bed56113ef73180b261b869245fcd94.pdf}.
+\bibitem{dgz}
+Anna Deng, Felix Gotti, and Jason Zeng,
+\emph{Factorizations in rational monogenic semidomains},
+arXiv:2607.10178 (2026).
+\url{https://arxiv.org/abs/2607.10178}.
 \end{thebibliography}
 \end{document}
